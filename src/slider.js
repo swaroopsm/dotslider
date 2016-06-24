@@ -10,6 +10,7 @@ export default class Slider extends Component {
     };
 
     this.navigateForward = this.navigateForward.bind(this);
+    this.updateDimensions = this.updateDimensions.bind(this);
   }
 
   handleNext() {
@@ -77,9 +78,22 @@ export default class Slider extends Component {
     }
   }
 
+  updateDimensions() {
+    console.log(this.$el.children[0].clientWidth);
+  }
+
+  startResizeWatcher() {
+    window.addEventListener('resize', this.updateDimensions)
+  }
+
+  stopResizeWatcher() {
+    window.removeEventListener('resize', this.updateDimensions)
+  }
+
   componentDidMount() {
     this.$el = this.refs['slider-wrapper'];
     this.startAnimationLoop();
+    this.startResizeWatcher()
   }
 
   componentDidUpdate() {
@@ -91,6 +105,10 @@ export default class Slider extends Component {
 
   componentWillMount() {
     this.setState({ active: this.props.active })
+  }
+
+  componentWillUnmount() {
+    this.stopResizeWatcher();
   }
 
   componentWillReceiveProps(nextProps) {
