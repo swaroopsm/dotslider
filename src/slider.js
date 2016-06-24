@@ -58,14 +58,12 @@ export default class Slider extends Component {
   }
 
   navigateForward() {
-    let total = React.Children.count(this.props.children);
+    let total = React.Children.count(this.props.children),
+        active;
 
-    if(this.state.active === total - 1) {
-      this.setState({ active: 0 });
-    }
-    else {
-      this.setState({ active: this.state.active+ 1 });
-    }
+    active = this.state.active === total - 1 ? 0 : this.state.active + 1;
+    this.setState({ active: active });
+    this.props.onChange && this.props.onChange(active);
   }
 
   startAnimationLoop() {
@@ -99,10 +97,7 @@ export default class Slider extends Component {
     if(this.timer) {
       clearInterval(this.timer);
       this.setState({ active: nextProps.active });
-
-      this.timer = setInterval(() => {
-        this.setState({ active: this.state.active + 1 });
-      }, 3000);
+      this.startAnimationLoop();
     }
   }
 
