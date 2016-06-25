@@ -40,28 +40,26 @@ class Example extends Component {
         <Slider active={ this.state.active }
                 onChange={ this.handleChange }>
           <Slide>
-            <h1>1</h1>
+            <img src="https://img3.gozefo.com/website/sofab_d.jpg" alt="" />
           </Slide>
 
           <Slide>
-            <h1>2</h1>
+            <img src="https://img3.gozefo.com/website/tv/tvb_d1.jpg" alt="" />
           </Slide>
 
           <Slide>
-            <h1>3</h1>
+            <img src="https://img3.gozefo.com/website/newhomepage/sell-d.jpg" alt="" />
           </Slide>
 
           <Slide>
-            <h1>4</h1>
-          </Slide>
-
-          <Slide>
-            <h1>5</h1>
+            <img src="https://img3.gozefo.com/website/HIW_nd.jpg" alt="" />
           </Slide>
         </Slider>
 
-        <button onClick={ this.handlePrevious }>Previous</button>
-        <button onClick={ this.handleNext }>Next</button>
+        <div>
+          <button onClick={ this.handlePrevious }>Previous</button>
+          <button onClick={ this.handleNext }>Next</button>
+        </div>
       </div>
     );
   }

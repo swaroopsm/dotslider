@@ -11,17 +11,14 @@ export default class Slider extends Component {
 
     this.navigateForward = this.navigateForward.bind(this);
     this.updateDimensions = this.updateDimensions.bind(this);
+    this.startAnimationLoop = this.startAnimationLoop.bind(this);
+    this.stopAnimationLoop = this.stopAnimationLoop.bind(this);
+    this.handleTouchMove = this.handleTouchMove.bind(this);
+    this.handleTouchStart = this.handleTouchStart.bind(this);
+    this.handleTouchStop = this.handleTouchStop.bind(this);
   }
 
-  handleNext() {
-
-  }
-
-  handlePrevious() {
-
-  }
-
-  renderSlides(dwtotalWidth) {
+  renderSlides() {
     let itemWidth = this.getItemWidth();
 
     return React.Children.map(this.props.children, (child) => {
@@ -38,18 +35,33 @@ export default class Slider extends Component {
     return 100 / React.Children.count(this.props.children);
   }
 
+  getItemWidthInPx() {
+    return this.$el.offsetWidth / React.Children.count(this.props.children);
+  }
+
   getStyle() {
     let itemWidth = this.getItemWidth(),
         activePosition = 0;
 
     if(this.$el) {
-      let itemWidth = this.$el.children[0].offsetWidth;
+      let itemWidth = this.getItemWidthInPx();
       activePosition = -(itemWidth * this.state.active); 
+      if(this.state.dragged) {
+        console.log(this.touchStartPosition + ':' + this.state.dragged)
+        if(this.touchStartPosition > this.state.dragged) {
+          let t = this.touchStartPosition - this.state.dragged
+          activePosition = -(itemWidth * ( this.state.active ) + t);
+        }
+        else {
+          let t = this.state.dragged - this.touchStartPosition;
+          activePosition = -(itemWidth * ( this.state.active) - t);
+        }
+      }
     }
 
     return {
       width: this.getTotalWidth() + '%',
-      transition: '0.6s',
+      transition: this.state.dragged ? '0s' : '0.6s',
       transform: 'translate3d(' + activePosition + 'px, 0px, 0px)'
     };
   }
@@ -67,7 +79,17 @@ export default class Slider extends Component {
     this.props.onChange && this.props.onChange(active);
   }
 
+  navigateBackward() {
+    let total = React.Children.count(this.props.children),
+        active;
+
+    active = this.state.active === 0 ? total-1 : this.state.active - 1;
+    this.setState({ active: active });
+    this.props.onChange && this.props.onChange(active);
+  }
+
   startAnimationLoop() {
+    console.log('Starting....')
     this.timer = setInterval(this.navigateForward, 3000);
   }
 
@@ -79,7 +101,7 @@ export default class Slider extends Component {
   }
 
   updateDimensions() {
-    console.log(this.$el.children[0].clientWidth);
+    // this.forceUpdate();
   }
 
   startResizeWatcher() {
@@ -88,6 +110,35 @@ export default class Slider extends Component {
 
   stopResizeWatcher() {
     window.removeEventListener('resize', this.updateDimensions)
+  }
+
+  handleTouchStart(e) {
+    this.touched = true;
+    this.touchStartPosition = e.touches[0].clientX;
+    this.stopAnimationLoop();
+  }
+
+  handleTouchStop(e) {
+    var dragged = this.state.dragged;
+    if(this.touched && dragged) {
+      if(this.touchStartPosition > dragged) {
+        console.log('Navigating forward');
+        this.navigateForward();
+      }
+      else {
+        this.navigateBackward()
+      }
+      this.touched = false;
+      this.setState({ dragged: false })
+    }
+    this.startAnimationLoop();
+  }
+
+  handleTouchMove(e) {
+    this.stopAnimationLoop();
+    let obj = e.touches[0];
+    console.log(obj.clientX + ", " + this.touchStartPosition);
+    this.setState({ dragged: obj.clientX, isDragging: true })
   }
 
   componentDidMount() {
@@ -99,6 +150,7 @@ export default class Slider extends Component {
   componentDidUpdate() {
     if(this.stopAnimation) {
       this.stopAnimation = false;
+      if(this.touched) { return; }
       this.startAnimationLoop();
     }
   }
@@ -121,7 +173,12 @@ export default class Slider extends Component {
 
   render() {
     return (
-      <div className='slider-wrapper' ref='slider-wrapper' style={ this.getStyle() }>
+      <div className='slider-wrapper'
+           ref='slider-wrapper'
+           style={ this.getStyle() }
+           onTouchStart={ this.handleTouchStart }
+           onTouchMove={ this.handleTouchMove }
+           onTouchEnd={ this.handleTouchStop }>
         { this.renderSlides() }
       </div>
     );

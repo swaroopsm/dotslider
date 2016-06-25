@@ -4,13 +4,11 @@
   <meta charset="UTF-8">
   <meta name=viewport content="width=device-width,initial-scale=1">
   <title></title>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 
   <style>
-    html, body { width: 100%; }
-
     #root {
       width: 100%;
-      margin: 40px;
       border: 1px solid;
       max-height: 400px;
       overflow: hidden;
@@ -20,11 +18,24 @@
       height: 100px;
       float: left;
     }
+
+    .slide img {
+      width: 100%;
+    }
+
+    .slide > h1 {
+      border: 2px solid red;
+      margin: 0px 10px;
+      box-sizing: border-box;
+    }
   </style>
 </head>
 <body>
-  <div id='root'></div>
-
+  <div class="container">
+    <div class='col-xs-12'>
+      <div id='root'></div>
+    </div>
+  </div>
   <script src="/bundle.js"></script>
 </body>
 </html>
