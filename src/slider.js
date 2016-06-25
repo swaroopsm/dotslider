@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import ReactDOM from 'react-dom';
 
 export default class Slider extends Component {
 
@@ -16,6 +17,7 @@ export default class Slider extends Component {
     this.handleTouchMove = this.handleTouchMove.bind(this);
     this.handleTouchStart = this.handleTouchStart.bind(this);
     this.handleTouchStop = this.handleTouchStop.bind(this);
+    this.handleTouchCancel = this.handleTouchCancel.bind(this);
   }
 
   renderSlides() {
@@ -46,7 +48,7 @@ export default class Slider extends Component {
     if(this.$el) {
       let itemWidth = this.getItemWidthInPx();
       activePosition = -(itemWidth * this.state.active); 
-      if(this.state.dragged) {
+      if(this.state.dragged && this.touchStartPosition) {
         console.log(this.touchStartPosition + ':' + this.state.dragged)
         if(this.touchStartPosition > this.state.dragged) {
           let t = this.touchStartPosition - this.state.dragged
@@ -61,7 +63,7 @@ export default class Slider extends Component {
 
     return {
       width: this.getTotalWidth() + '%',
-      transition: this.state.dragged ? '0s' : '0.6s',
+      transition: ( this.touched && this.state.dragged ) || this.resized ? '0s' : '0.6s',
       transform: 'translate3d(' + activePosition + 'px, 0px, 0px)'
     };
   }
@@ -101,7 +103,8 @@ export default class Slider extends Component {
   }
 
   updateDimensions() {
-    // this.forceUpdate();
+    this.resized = true;
+    this.setState({ wrapperWidth: this.$el.offsetWidth });
   }
 
   startResizeWatcher() {
@@ -113,8 +116,22 @@ export default class Slider extends Component {
   }
 
   handleTouchStart(e) {
+    this.stopAnimationLoop();
+    if(e.touches.length > 1) {
+      e.preventDefault();
+      this.setState({ dragged: false });
+      return;
+    }
     this.touched = true;
     this.touchStartPosition = e.touches[0].clientX;
+    if(this.state.dragged) { this.setState({ dragged: false }) }
+    // this.stopAnimationLoop();
+  }
+
+  handleTouchCancel(e) {
+    this.touched = false;
+    this.touchStartPosition = null;
+    this.setState({ dragged: false })
     this.stopAnimationLoop();
   }
 
@@ -122,23 +139,22 @@ export default class Slider extends Component {
     var dragged = this.state.dragged;
     if(this.touched && dragged) {
       if(this.touchStartPosition > dragged) {
-        console.log('Navigating forward');
         this.navigateForward();
       }
       else {
         this.navigateBackward()
       }
-      this.touched = false;
       this.setState({ dragged: false })
     }
-    this.startAnimationLoop();
+      this.touched = false;
+      this.touchStartPosition = null;
   }
 
   handleTouchMove(e) {
     this.stopAnimationLoop();
+    if(e.touches.length > 1) { e.preventDefault(); this.setState({ dragged: false }); return; }
     let obj = e.touches[0];
-    console.log(obj.clientX + ", " + this.touchStartPosition);
-    this.setState({ dragged: obj.clientX, isDragging: true })
+    this.setState({ dragged: obj.clientX })
   }
 
   componentDidMount() {
@@ -148,9 +164,10 @@ export default class Slider extends Component {
   }
 
   componentDidUpdate() {
+    this.resized = false;
     if(this.stopAnimation) {
       this.stopAnimation = false;
-      if(this.touched) { return; }
+      // if(this.touched) { return; }
       this.startAnimationLoop();
     }
   }
@@ -178,6 +195,7 @@ export default class Slider extends Component {
            style={ this.getStyle() }
            onTouchStart={ this.handleTouchStart }
            onTouchMove={ this.handleTouchMove }
+           onTouchCancel={ this.handleTouchCancel }
            onTouchEnd={ this.handleTouchStop }>
         { this.renderSlides() }
       </div>
