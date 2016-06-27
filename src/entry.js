@@ -7,40 +7,41 @@ class Example extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      active: 0
-    };
-
     this.handleNext = this.handleNext.bind(this);
     this.handlePrevious = this.handlePrevious.bind(this);
     this.handleChange = this.handleChange.bind(this);
+
+    this.state = {
+      active: 0
+    };
   }
 
   handleChange(active) {
-    this.activeSlide = active;
+    console.log(active)
   }
 
   handleNext() {
-    var active = this.activeSlide ? this.activeSlide === 4 ? -1 : this.activeSlide : 0;
-    this.activeSlide = active + 1;
-
-    this.setState({ active: this.activeSlide });
   }
 
   handlePrevious() {
-    var active = this.activeSlide ? this.activeSlide === 0 ? 5 : this.activeSlide : 5;
-    this.activeSlide = active - 1;
+  }
 
-    this.setState({ active: this.activeSlide });
+  getNextIcon() {
+    return <button>Next</button>
+  }
+
+  getPrevIcon() {
+    return <button>Previous</button>
   }
 
   render() {
     return (
       <div>
-        <Slider active={ this.state.active }
-                autoplay={ true }
+        <Slider autoplay={ true }
                 pauseOnHover={ true }
-                onChange={ this.handleChange }>
+                goTo={ this.state.active }
+                nextIcon={ this.getNextIcon() }
+                prevIcon={ this.getPrevIcon() }>
           <Slide>
             <img src="https://img3.gozefo.com/website/sofab_d.jpg" alt="" />
           </Slide>
@@ -57,11 +58,6 @@ class Example extends Component {
             <img src="https://img3.gozefo.com/website/HIW_nd.jpg" alt="" />
           </Slide>
         </Slider>
-
-        <div>
-          <button onClick={ this.handlePrevious }>Previous</button>
-          <button onClick={ this.handleNext }>Next</button>
-        </div>
       </div>
     );
   }
