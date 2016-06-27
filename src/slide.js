@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import assign from 'object.assign';
 
 export default class Slide extends Component {
 
@@ -8,9 +9,27 @@ export default class Slide extends Component {
     };
   }
 
+  getProps() {
+    let { onMouseOver, onMouseLeave } = this.props;
+
+    let props = {
+      className: 'slide',
+      style: this.getStyle()
+    };
+
+    if(this.props.onMouseOver && this.props.onMouseLeave) {
+      props = assign(props, {
+        onMouseOver,
+        onMouseLeave
+      });
+    }
+
+    return props;
+  }
+
   render() {
     return (
-      <div className='slide' style={ this.getStyle() }>
+      <div {...this.getProps()}>
         { this.props.children }
       </div>
     )

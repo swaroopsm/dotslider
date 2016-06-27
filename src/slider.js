@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
+import assign from 'object.assign';
 
 export default class Slider extends Component {
 
@@ -18,38 +19,75 @@ export default class Slider extends Component {
     this.handleTouchStart = this.handleTouchStart.bind(this);
     this.handleTouchStop = this.handleTouchStop.bind(this);
     this.handleTouchCancel = this.handleTouchCancel.bind(this);
+    this.handleMouseOver = this.handleMouseOver.bind(this);
+    this.handleMouseLeave = this.handleMouseLeave.bind(this);
+  }
+
+  hasMounted() {
+    return typeof this.$el !== 'undefined';
+  }
+
+  handleMouseOver() {
+    this.stopAnimationLoop();
+  }
+
+  handleMouseLeave() {
+    this.stopAnimation = false;
+    this.startAnimationLoop();
   }
 
   renderSlides() {
-    let itemWidth = this.getItemWidth();
+    let itemWidth = this.getItemWidth(),
+        children = [],
+        lastChild = this.props.children[this.props.children.length - 1],
+        firstChild = this.props.children[0],
+        props = { width: itemWidth };
 
-    return React.Children.map(this.props.children, (child) => {
-      return React.cloneElement(child, {
-        width: itemWidth
+      if(this.props.pauseOnHover) {
+        props.onMouseOver = this.handleMouseOver;
+        props.onMouseLeave = this.handleMouseLeave
+      }
+
+    if(!this.hasMounted()) {
+      return React.Children.map(this.props.children, (child, index) => {
+        return React.cloneElement(child, assign(props, { key: index }));
       });
+    }
+
+    children.push(React.cloneElement(lastChild, assign(props, { key: -1 })));
+
+    React.Children.forEach(this.props.children, (child, index) => {
+      children.push(React.cloneElement(child, assign(props, { key: index })));
     });
-    return this.props.children;
+    children.push(React.cloneElement(firstChild, assign(props, { key: this.props.children.length })));
+
+    return children;
+  }
+
+  getChildrenCount() {
+    var count = React.Children.count(this.props.children);
+
+    return this.hasMounted() ? count + 2 : count;
   }
 
   getItemWidth() {
     let totalWidth = this.getTotalWidth();
 
-    return 100 / React.Children.count(this.props.children);
+    return 100 / this.getChildrenCount();
   }
 
   getItemWidthInPx() {
-    return this.$el.offsetWidth / React.Children.count(this.props.children);
+    return this.$el.children[0].offsetWidth;
   }
 
   getStyle() {
     let itemWidth = this.getItemWidth(),
         activePosition = 0;
 
-    if(this.$el) {
+    if(this.hasMounted()) {
       let itemWidth = this.getItemWidthInPx();
       activePosition = -(itemWidth * this.state.active); 
       if(this.state.dragged && this.touchStartPosition) {
-        console.log(this.touchStartPosition + ':' + this.state.dragged)
         if(this.touchStartPosition > this.state.dragged) {
           let t = this.touchStartPosition - this.state.dragged
           activePosition = -(itemWidth * ( this.state.active ) + t);
@@ -63,42 +101,68 @@ export default class Slider extends Component {
 
     return {
       width: this.getTotalWidth() + '%',
-      transition: ( this.touched && this.state.dragged ) || this.resized ? '0s' : '0.6s',
+      transition: ( this.touched && this.state.dragged ) || this.resized ? '0s' : 'all 0.6s ease-out',
       transform: 'translate3d(' + activePosition + 'px, 0px, 0px)'
     };
   }
 
   getTotalWidth() {
-    return React.Children.count(this.props.children) * 100;
+    return this.getChildrenCount() * 100;
   }
 
   navigateForward() {
-    let total = React.Children.count(this.props.children),
+    let total = this.getChildrenCount(),
         active;
 
     active = this.state.active === total - 1 ? 0 : this.state.active + 1;
     this.setState({ active: active });
+    if(this.hasMounted()) {
+      if(this.__timeout) {
+        clearTimeout(this.__timeout);
+      }
+      this.__timeout = setTimeout(() => {
+        if(this.state.active === 5) {
+          this.resized = true;
+          this.setState({ active: 1 });
+        }
+      }, 550)
+    }
     this.props.onChange && this.props.onChange(active);
   }
 
   navigateBackward() {
-    let total = React.Children.count(this.props.children),
+    let total = this.getChildrenCount(),
         active;
 
     active = this.state.active === 0 ? total-1 : this.state.active - 1;
     this.setState({ active: active });
     this.props.onChange && this.props.onChange(active);
+
+    if(this.hasMounted()) {
+      if(this.__timeout) {
+        clearTimeout(this.__timeout);
+      }
+      this.__timeout = setTimeout(() => {
+        if(this.state.active === 0) {
+          this.resized = true;
+          this.setState({ active: this.props.children.length });
+        }
+      }, 550)
+    }
   }
 
   startAnimationLoop() {
-    console.log('Starting....')
-    this.timer = setInterval(this.navigateForward, 3000);
+    if(!this.props.autoplay) { return; }
+
+    this.timer = setInterval(this.navigateForward, this.props.autoplaySpeed);
   }
 
   stopAnimationLoop() {
-    if(this.timer) {
+    if(this.timer && this.props.autoplay) {
       this.stopAnimation = true;
       clearInterval(this.timer);
+
+      if(this.__timeout) { clearTimeout(this.__timeout); }
     }
   }
 
@@ -125,7 +189,6 @@ export default class Slider extends Component {
     this.touched = true;
     this.touchStartPosition = e.touches[0].clientX;
     if(this.state.dragged) { this.setState({ dragged: false }) }
-    // this.stopAnimationLoop();
   }
 
   handleTouchCancel(e) {
@@ -159,6 +222,8 @@ export default class Slider extends Component {
 
   componentDidMount() {
     this.$el = this.refs['slider-wrapper'];
+    this.resized = true;
+    this.setState({ active: 1 });
     this.startAnimationLoop();
     this.startResizeWatcher()
   }
@@ -183,7 +248,6 @@ export default class Slider extends Component {
   componentWillReceiveProps(nextProps) {
     if(this.timer) {
       clearInterval(this.timer);
-      this.setState({ active: nextProps.active });
       this.startAnimationLoop();
     }
   }
@@ -206,11 +270,13 @@ export default class Slider extends Component {
 // Default Props
 Slider.defaultProps = {
   autoplay: false,
-  autoplayTime: 2000,
+  autoplaySpeed: 3000,
+  puaseOnHover: false
 };
 
 // Props Validation
 Slider.propTypes = {
   autoplay: PropTypes.bool,
-  autoplayTime: PropTypes.number
+  autoplayTime: PropTypes.number,
+  pauseOnHover: PropTypes.bool
 };

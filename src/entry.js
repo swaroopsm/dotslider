@@ -38,6 +38,8 @@ class Example extends Component {
     return (
       <div>
         <Slider active={ this.state.active }
+                autoplay={ true }
+                pauseOnHover={ true }
                 onChange={ this.handleChange }>
           <Slide>
             <img src="https://img3.gozefo.com/website/sofab_d.jpg" alt="" />
