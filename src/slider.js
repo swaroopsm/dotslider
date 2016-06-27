@@ -38,6 +38,20 @@ export default class Slider extends Component {
     this.startAnimationLoop();
   }
 
+  calculateSlidePosition(i) {
+    return i+1;
+  }
+
+  renderDots() {
+    let dots = [];
+
+    for(var i=0; i<this.props.children.length; i++) {
+      dots.push(<div className='dot' key={ i } onClick={ this.goToSlide.bind(this, this.calculateSlidePosition(i)) }></div>)
+    }
+
+    return <div className='dots-wrapper'>{ dots }</div>;
+  }
+
   renderControls() {
     let { nextIcon, prevIcon } = this.props;
 
@@ -115,8 +129,8 @@ export default class Slider extends Component {
 
     return {
       width: this.getTotalWidth() + '%',
-      transition: ( this.touched && this.state.dragged ) || this.resized ? '0s' : 'all 0.6s',
-      transform: 'translate3d(' + activePosition + 'px, 0px, 0px)'
+      transition: ( this.touched && this.state.dragged ) || this.resized ? '0s' : '0.6s',
+      transform: 'translate3d(' + activePosition + 'px, 0, 0)'
     };
   }
 
@@ -141,20 +155,18 @@ export default class Slider extends Component {
       this.__timeout = setTimeout(() => {
         var actualSlide = active;
 
-        if(this.state.active >= total-1) {
+        if(this.state.active === total-1) {
           active = 1;
           this.resized = true;
           this.setState({ active: active, isAnimating: false });
         }
+        else if(this.state.active === 0) {
+          active = this.props.children.length;
+          this.resized = true;
+          this.setState({ active: active, isAnimating: false });
+        }
         else {
-          if(this.state.active <= 0) {
-            active = this.props.children.length;
-            this.resized = true;
-            this.setState({ active: active, isAnimating: false });
-          }
-          else {
-            this.setState({ isAnimating: false });
-          }
+          this.setState({ isAnimating: false });
         }
       }, 550)
     }
@@ -287,15 +299,6 @@ export default class Slider extends Component {
     this.stopResizeWatcher();
   }
 
-  componentWillReceiveProps(nextProps) {
-    if(this.timer) {
-      if(nextProps.goTo !== this.state.active) {
-        this.stopAnimationLoop();
-        this.goToSlide(nextProps.goTo);
-      }
-    }
-  }
-
   render() {
     return (
       <div>
@@ -310,6 +313,7 @@ export default class Slider extends Component {
         </div>
 
         { this.renderControls() }
+        { this.renderDots() }
       </div>
     );
   }
