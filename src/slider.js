@@ -115,8 +115,6 @@ export default class Slider extends Component {
   }
 
   getItemWidth() {
-    let totalWidth = this.getTotalWidth();
-
     return 100 / this.getChildrenCount();
   }
 
@@ -125,11 +123,10 @@ export default class Slider extends Component {
   }
 
   getStyle() {
-    let itemWidth = this.getItemWidth(),
+    let itemWidth = this.getItemWidthInPx(),
         activePosition = 0;
 
     if(this.hasMounted()) {
-      let itemWidth = this.getItemWidthInPx();
       activePosition = -(itemWidth * this.state.active); 
 
       if(this.state.dragged && this.touchStartPosition) {
