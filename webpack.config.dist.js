@@ -3,6 +3,8 @@ const path = require('path');
 module.exports = {
   entry: './src/entry.dist.js',
   output: {
+    library: 'dotslider',
+    libraryTarget: 'umd',
     filename: 'bundle.dist.js',
     path: path.join(__dirname, 'dist')
   },

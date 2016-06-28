@@ -119,7 +119,7 @@ export default class Slider extends Component {
   }
 
   getItemWidthInPx() {
-    return this.$el.children[0].offsetWidth;
+    return this.hasMounted() ? this.$el.children[0].offsetWidth : 0;
   }
 
   getStyle() {
