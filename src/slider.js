@@ -34,7 +34,6 @@ export default class Slider extends Component {
 
   handleMouseOver() {
     this.stopAnimationLoop();
-    if(this.__timeout) { clearTimeout(this.__timeout); }
   }
 
   handleMouseLeave() {
@@ -61,8 +60,6 @@ export default class Slider extends Component {
     };
 
     if(this.props.pauseOnHover) {
-      props.onMouseOver = this.handleMouseOver;
-      props.onMouseLeave = this.handleMouseLeave
     }
 
     if(this.props.navigator) {
@@ -239,11 +236,11 @@ export default class Slider extends Component {
   }
 
   stopAnimationLoop() {
+    if(this.__timeout) { clearTimeout(this.__timeout); }
+
     if(this.timer && this.props.autoplay) {
       this.stopAnimation = true;
       clearInterval(this.timer);
-
-      if(this.__timeout) { clearTimeout(this.__timeout); }
     }
   }
 
@@ -352,9 +349,9 @@ export default class Slider extends Component {
 // Default Props
 Slider.defaultProps = {
   autoplay: false,
-  autoplaySpeed: 3000,
+  autoplaySpeed: 5000,
   puaseOnHover: false,
-  transitionSpeed: 300
+  transitionSpeed: 200
 };
 
 // Props Validation
