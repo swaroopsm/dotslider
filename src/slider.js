@@ -37,11 +37,14 @@ export default class Slider extends Component {
   }
 
   handleMouseLeave() {
-    this.stopAnimation = false;
+    this.stopAnimationLoop();
+
     if(this.state.isAnimating) {
       this.setState({ isAnimating: false });
     }
-    this.startAnimationLoop();
+    else {
+      this.startAnimationLoop();
+    }
   }
 
   calculateSlidePosition(i) {
@@ -57,12 +60,16 @@ export default class Slider extends Component {
       onClick: (number) => {
         if(this.state.isAnimating) { return; }
         this.goToSlide(number);
+        // this.handleMouseOver();
       },
       getActive: this.getActive,
-      totalChildren: this.getChildrenCount()
+      totalChildren: this.getChildrenCount(),
+      onMouseLeave: this.handleMouseLeave,
+      onTouchEnd: this.handleMouseLeave
     };
 
     if(this.props.pauseOnHover) {
+
     }
 
     if(this.props.navigator) {
@@ -171,10 +178,6 @@ export default class Slider extends Component {
 
     this.stopAnimationLoop();
 
-    if(this.__timeout) {
-      clearTimeout(this.__timeout);
-    }
-
     active = number;
 
     this.setState({ active: active, isAnimating: true });
@@ -275,11 +278,12 @@ export default class Slider extends Component {
     this.touched = false;
     this.touchStartPosition = null;
     this.stopAnimationLoop();
-    this.setState({ dragged: false })
+    this.setState({ dragged: false });
   }
 
   handleTouchStop(e) {
     var dragged = this.state.dragged;
+
     if(this.touched && dragged) {
       if(this.touchStartPosition > dragged) {
         this.navigateForward();
@@ -288,7 +292,7 @@ export default class Slider extends Component {
         this.navigateBackward()
       }
 
-      this.setState({ dragged: false })
+      this.setState({ dragged: false });
     }
 
     this.touched = false;
@@ -313,7 +317,7 @@ export default class Slider extends Component {
     this.resized = false;
     if(this.stopAnimation) {
       this.stopAnimation = false;
-      if(this.touched) { return; }
+      // if(this.touched) { return; }
       this.startAnimationLoop();
     }
   }

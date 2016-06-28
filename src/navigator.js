@@ -3,15 +3,20 @@ import React, { Component } from 'react';
 export default class Navigator extends Component {
 
   getPropsForChild(index, children) {
-    let { onMouseOver, onMouseLeave } = this.props;
+    let { onMouseOver, onMouseLeave, onTouchEnd } = this.props;
     let props = {
       onClick: this.props.onClick.bind(null, index + 1),
-      className: this.isActive(index, children) ? 'active' : ''
+      className: this.isActive(index, children) ? 'active' : '',
+      active: this.isActive(index, children),
+      onTouchStart: this.props.onClick.bind(null, index + 1)
     };
 
-    if(onMouseOver && onMouseLeave) {
-      props.onMouseOver = onMouseOver;
+    if(onMouseLeave) {
       props.onMouseLeave = onMouseLeave;
+    }
+
+    if(onTouchEnd) {
+      props.onTouchEnd = onTouchEnd;
     }
 
     return props;
@@ -44,14 +49,21 @@ export default class Navigator extends Component {
   }
   
   render() {
+    let className = 'dotslider-navigation';
+
     if(this.props.useDefault) {
       return this.renderDefaultNavigator()
     }
 
+    className = this.props.className ? className += ` ${this.props.className}` : className;
+
     return (
-      <div className='dotslider-navigation'>
-        { this.renderChildren() }
-      </div>
+      React.createElement(this.props.el, { className }, this.renderChildren())
     )
   }
 }
+
+// Default Props
+Navigator.defaultProps = {
+  el: 'div'
+};
