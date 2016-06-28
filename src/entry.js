@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { render } from 'react-dom';
 import Slider from './slider';
 import Slide from './slide';
+import Navigator from './navigator';
 
 class Example extends Component {
   constructor(props) {
@@ -32,6 +33,17 @@ class Example extends Component {
 
   getPrevIcon() {
     return <button>Previous</button>
+  }
+
+  getNavigator() {
+    return (
+      <Navigator className='slider-navigator'>
+        <li>Slide 1</li>
+        <li>Slide 2</li>
+        <li>Slide 3</li>
+        <li>Slide 4</li>
+      </Navigator>
+    );
   }
 
   render() {

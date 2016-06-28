@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import assign from 'object.assign';
+import Navigator from './navigator';
 
 export default class Slider extends Component {
 
@@ -23,6 +24,7 @@ export default class Slider extends Component {
     this.handleTouchCancel = this.handleTouchCancel.bind(this);
     this.handleMouseOver = this.handleMouseOver.bind(this);
     this.handleMouseLeave = this.handleMouseLeave.bind(this);
+    this.goToSlide = this.goToSlide.bind(this);
   }
 
   hasMounted() {
@@ -43,18 +45,17 @@ export default class Slider extends Component {
   }
 
   renderDots() {
-    let dots = [],
-        className = 'dot';
+    let props = {
+      onClick: this.goToSlide,
+      active: this.state.active,
+      totalChildren: this.getChildrenCount()
+    };
 
-    for(var i=0; i<this.props.children.length; i++) {
-      className = this.state.active === i+1 ||
-                  ( i === this.props.children.length - 1 && this.state.active === 0 ) ||
-                  ( this.state.active === this.getChildrenCount() - 1 && i === 0 )
-                  ? 'dot active' : 'dot';
-      dots.push(<div className={ className } key={ i } onClick={ this.goToSlide.bind(this, this.calculateSlidePosition(i)) }></div>)
+    if(this.props.navigator) {
+      return React.cloneElement(this.props.navigator, props);
     }
 
-    return <div className='dots-wrapper'>{ dots }</div>;
+    return <Navigator { ...props } useDefault={ true } actualChildren={ React.Children.count(this.props.children) } />
   }
 
   renderControls() {
@@ -339,12 +340,18 @@ Slider.defaultProps = {
   autoplay: false,
   autoplaySpeed: 3000,
   puaseOnHover: false,
-  transitionSpeed: 300
+  transitionSpeed: 300,
+  pauseOnDotsHover: true
 };
 
 // Props Validation
 Slider.propTypes = {
   autoplay: PropTypes.bool,
   autoplayTime: PropTypes.number,
-  pauseOnHover: PropTypes.bool
+  pauseOnHover: PropTypes.bool,
+  pauseOnDotsHover: PropTypes.bool,
+  nextIcon: PropTypes.node,
+  prevIcon: PropTypes.node,
+  navigator: PropTypes.node,
+  transitionSpeed: PropTypes.number
 };

@@ -10,7 +10,6 @@
     #root {
       width: 100%;
       border: 1px solid;
-      max-height: 400px;
       overflow: hidden;
     }
 
@@ -33,23 +32,29 @@
       box-sizing: border-box;
     }
 
-    .dots-wrapper {
+    .dotslider-navigation {
+      width: 100%;
       text-align: center;
+      display: inline-block;
     }
 
-    .dot.active {
+    .dotslider-navigation > li {
+      display: inline-block;
+    }
+
+    .dotslider-navigation.dotslider-navigation-default > li {
+      width: 10px;
+      height: 10px;
+      background: teal;
+      margin: 10px;
+      border-radius: 10px;
+    }
+
+    .dotslider-navigation-default > li.active {
       background: #fff;
       border: 1px solid teal;
     }
 
-    .dot {
-      width: 10px;
-      height: 10px;
-      background: teal;
-      display: inline-block;
-      margin: 10px;
-      border-radius: 10px;
-    }
   </style>
 </head>
 <body>
