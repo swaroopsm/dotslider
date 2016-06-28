@@ -7,38 +7,23 @@ import Navigator from './navigator';
 class Example extends Component {
   constructor(props) {
     super(props);
-
-    this.handleNext = this.handleNext.bind(this);
-    this.handlePrevious = this.handlePrevious.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-
-    this.state = {
-      active: 0
-    };
-  }
-
-  handleChange(active) {
-    console.log(active)
-  }
-
-  handleNext() {
-  }
-
-  handlePrevious() {
   }
 
   getNextIcon() {
-    return <button>Next</button>
+    return <span className='next' />
   }
 
   getPrevIcon() {
-    return <button>Previous</button>
+    return <span className='previous' />
   }
 
   getNavigator() {
     return (
       <Navigator className='slider-navigator'>
-        <li>Slide 1</li>
+        <li>
+          <h6>Hello</h6>
+          <p>Description</p>
+        </li>
         <li>Slide 2</li>
         <li>Slide 3</li>
         <li>Slide 4</li>
@@ -51,9 +36,9 @@ class Example extends Component {
       <div>
         <Slider autoplay={ true }
                 pauseOnHover={ true }
-                goTo={ this.state.active }
                 nextIcon={ this.getNextIcon() }
-                prevIcon={ this.getPrevIcon() }>
+                prevIcon={ this.getPrevIcon() }
+                navigator={ this.getNavigator() }>
           <Slide>
             <img src="https://img3.gozefo.com/website/sofab_d.jpg" alt="" />
           </Slide>

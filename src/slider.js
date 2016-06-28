@@ -51,6 +51,11 @@ export default class Slider extends Component {
       totalChildren: this.getChildrenCount()
     };
 
+    if(this.props.pauseOnHover) {
+      props.onMouseOver = this.handleMouseOver;
+      props.onMouseLeave = this.handleMouseLeave
+    }
+
     if(this.props.navigator) {
       return React.cloneElement(this.props.navigator, props);
     }
@@ -340,8 +345,7 @@ Slider.defaultProps = {
   autoplay: false,
   autoplaySpeed: 3000,
   puaseOnHover: false,
-  transitionSpeed: 300,
-  pauseOnDotsHover: true
+  transitionSpeed: 300
 };
 
 // Props Validation

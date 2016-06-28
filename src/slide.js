@@ -5,7 +5,8 @@ export default class Slide extends Component {
 
   getStyle() {
     return {
-      width: this.props.width + '%'
+      width: this.props.width + '%',
+      float: 'left'
     };
   }
 
@@ -13,7 +14,7 @@ export default class Slide extends Component {
     let { onMouseOver, onMouseLeave } = this.props;
 
     let props = {
-      className: 'slide',
+      className: 'dotslider-slide',
       style: this.getStyle()
     };
 
