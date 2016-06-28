@@ -1,6 +1,6 @@
 {
   "name": "dotslider",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Zero effort slider / carousel component in pure react with zero dependencies",
   "main": "./lib/entry.dist.js",
   "scripts": {
