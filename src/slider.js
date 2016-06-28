@@ -38,6 +38,9 @@ export default class Slider extends Component {
 
   handleMouseLeave() {
     this.stopAnimation = false;
+    if(this.state.isAnimating) {
+      this.setState({ isAnimating: false });
+    }
     this.startAnimationLoop();
   }
 
