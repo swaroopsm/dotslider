@@ -40,19 +40,19 @@ class Example extends Component {
                 prevIcon={ this.getPrevIcon() }
                 navigator={ this.getNavigator() }>
           <Slide>
-            <img src="https://img3.gozefo.com/website/sofab_d.jpg" alt="" />
+            <img src="https://s32.postimg.org/ev0a04nlh/black_and_white_coffee_cup_mug.jpg" alt="" />
           </Slide>
 
           <Slide>
-            <img src="https://img3.gozefo.com/website/tv/tvb_d1.jpg" alt="" />
+            <img src="https://s32.postimg.org/knawejynp/cars_traffic_night_street.jpg" alt="" />
           </Slide>
 
           <Slide>
-            <img src="https://img3.gozefo.com/website/newhomepage/sell-d.jpg" alt="" />
+            <img src="https://s31.postimg.org/ku5jrghvf/food_kitchen_cutting_board_cooking.jpg" alt="" />
           </Slide>
 
           <Slide>
-            <img src="https://img3.gozefo.com/website/HIW_nd.jpg" alt="" />
+            <img src="https://s31.postimg.org/vt1j4q73f/pexels_photo.jpg" alt="" />
           </Slide>
         </Slider>
       </div>

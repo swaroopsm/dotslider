@@ -25,6 +25,7 @@ export default class Slider extends Component {
     this.handleMouseOver = this.handleMouseOver.bind(this);
     this.handleMouseLeave = this.handleMouseLeave.bind(this);
     this.goToSlide = this.goToSlide.bind(this);
+    this.getActive = this.getActive.bind(this);
   }
 
   hasMounted() {
@@ -33,6 +34,7 @@ export default class Slider extends Component {
 
   handleMouseOver() {
     this.stopAnimationLoop();
+    if(this.__timeout) { clearTimeout(this.__timeout); }
   }
 
   handleMouseLeave() {
@@ -44,10 +46,17 @@ export default class Slider extends Component {
     return i+1;
   }
 
+  getActive() {
+    return this.state.active;
+  }
+
   renderDots() {
     let props = {
-      onClick: this.goToSlide,
-      active: this.state.active,
+      onClick: (number) => {
+        if(this.state.isAnimating) { return; }
+        this.goToSlide(number);
+      },
+      getActive: this.getActive,
       totalChildren: this.getChildrenCount()
     };
 
@@ -71,8 +80,7 @@ export default class Slider extends Component {
         { React.cloneElement(prevIcon, { onClick: this.navigateBackward }) }
         { React.cloneElement(nextIcon, { onClick: this.navigateForward }) }
       </div>
-    )
-    
+    );
   }
 
   renderSlides() {
@@ -165,11 +173,12 @@ export default class Slider extends Component {
         active;
 
     this.stopAnimationLoop();
-    active = number;
 
     if(this.__timeout) {
       clearTimeout(this.__timeout);
     }
+
+    active = number;
 
     this.setState({ active: active, isAnimating: true });
 

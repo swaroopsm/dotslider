@@ -18,9 +18,11 @@ export default class Navigator extends Component {
   }
 
   isActive(i, children) {
-    return this.props.active === i + 1 ||
-           ( i === children - 1 && this.props.active === 0 ) ||
-           ( this.props.active === this.props.totalChildren - 1 && i === 0 );
+    let active = this.props.getActive();
+
+    return active === i + 1 ||
+           ( i === children - 1 && active === 0 ) ||
+           ( active === this.props.totalChildren - 1 && i === 0 );
   }
 
   renderChildren() {
