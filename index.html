@@ -14,8 +14,13 @@
       overflow: hidden;
     }
 
+    .slider-wrapper {
+      position: relative;
+    }
+
     .slide {
       float: left;
+      position: relative;
     }
 
     .slide img {
@@ -32,10 +37,15 @@
       text-align: center;
     }
 
+    .dot.active {
+      background: #fff;
+      border: 1px solid teal;
+    }
+
     .dot {
       width: 10px;
       height: 10px;
-      background: red;
+      background: teal;
       display: inline-block;
       margin: 10px;
       border-radius: 10px;

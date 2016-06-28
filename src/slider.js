@@ -43,10 +43,15 @@ export default class Slider extends Component {
   }
 
   renderDots() {
-    let dots = [];
+    let dots = [],
+        className = 'dot';
 
     for(var i=0; i<this.props.children.length; i++) {
-      dots.push(<div className='dot' key={ i } onClick={ this.goToSlide.bind(this, this.calculateSlidePosition(i)) }></div>)
+      className = this.state.active === i+1 ||
+                  ( i === this.props.children.length - 1 && this.state.active === 0 ) ||
+                  ( this.state.active === this.getChildrenCount() - 1 && i === 0 )
+                  ? 'dot active' : 'dot';
+      dots.push(<div className={ className } key={ i } onClick={ this.goToSlide.bind(this, this.calculateSlidePosition(i)) }></div>)
     }
 
     return <div className='dots-wrapper'>{ dots }</div>;
@@ -115,6 +120,7 @@ export default class Slider extends Component {
     if(this.hasMounted()) {
       let itemWidth = this.getItemWidthInPx();
       activePosition = -(itemWidth * this.state.active); 
+
       if(this.state.dragged && this.touchStartPosition) {
         if(this.touchStartPosition > this.state.dragged) {
           let t = this.touchStartPosition - this.state.dragged
@@ -129,9 +135,19 @@ export default class Slider extends Component {
 
     return {
       width: this.getTotalWidth() + '%',
-      transition: ( this.touched && this.state.dragged ) || this.resized ? '0s' : '0.6s',
-      transform: 'translate3d(' + activePosition + 'px, 0, 0)'
+      transition: ( this.touched && this.state.dragged ) || this.resized ? 'none' : this.getTransitionSpeed(),
+      transform: 'translate3d(' + activePosition + 'px, 0, 0)',
+      WebkitTransform: 'translate3d(' + activePosition + 'px, 0, 0)',
+      MozTransform: 'translate3d(' + activePosition + 'px, 0, 0)'
     };
+  }
+
+  getTransitionSpeed() {
+    return this.props.transitionSpeed / 1000 + 's';
+  }
+
+  getCloneSlideTimeout() {
+    return this.props.transitionSpeed + 100;
   }
 
   getTotalWidth() {
@@ -153,8 +169,7 @@ export default class Slider extends Component {
 
     if(this.hasMounted()) {
       this.__timeout = setTimeout(() => {
-        var actualSlide = active;
-
+        this.stopAnimationLoop();
         if(this.state.active === total-1) {
           active = 1;
           this.resized = true;
@@ -168,7 +183,7 @@ export default class Slider extends Component {
         else {
           this.setState({ isAnimating: false });
         }
-      }, 550)
+      }, this.getCloneSlideTimeout())
     }
   }
 
@@ -323,7 +338,8 @@ export default class Slider extends Component {
 Slider.defaultProps = {
   autoplay: false,
   autoplaySpeed: 3000,
-  puaseOnHover: false
+  puaseOnHover: false,
+  transitionSpeed: 300
 };
 
 // Props Validation
