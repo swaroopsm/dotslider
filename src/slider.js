@@ -56,6 +56,8 @@ export default class Slider extends Component {
   }
 
   renderDots() {
+    if(this.props.children.length === 1) { return; }
+
     let props = {
       onClick: (number) => {
         if(this.state.isAnimating) { return; }
@@ -80,6 +82,7 @@ export default class Slider extends Component {
   }
 
   renderControls() {
+    if(this.props.children.length === 1) { return; }
     let { nextIcon, prevIcon } = this.props;
 
     return (
@@ -233,7 +236,7 @@ export default class Slider extends Component {
   }
 
   startAnimationLoop() {
-    if(!this.props.autoplay) { return; }
+    if(!this.props.autoplay || this.props.children.length === 1) { return; }
 
     this.timer = setInterval(this.navigateForward, this.props.autoplaySpeed);
   }
@@ -262,6 +265,7 @@ export default class Slider extends Component {
 
   handleTouchStart(e) {
     if(this.state.isAnimating) { return; }
+    if(this.props.children.length === 1) { return; }
 
     this.stopAnimationLoop();
     if(e.touches.length > 1) {
@@ -300,6 +304,7 @@ export default class Slider extends Component {
   }
 
   handleTouchMove(e) {
+    if(this.props.children.length === 1) { return; }
     if(e.touches.length > 1) { e.preventDefault(); this.setState({ dragged: false }); return; }
     let obj = e.touches[0];
     this.setState({ dragged: obj.clientX })
